@@ -1,11 +1,43 @@
+import { GetServerSideProps } from 'next';
+import { useEffect, useState } from 'react';
 import styles from '../styles/home.module.scss';
+interface IPost {
+  id: string;
+  title: string;
+}
 
-export default function Home() {
+interface IHomeProps {
+  posts: IPost[];
+}
+
+export default function Home({ posts }: IHomeProps) {
+  // const [posts, setPosts] = useState<IPost[]>([]);
+
+  // useEffect(() => {
+  //   fetch('http://localhost:3333/posts')
+  //     .then(response => response.json())
+  //     .then(data => setPosts(data));
+  // }, []);
+
   return (
     <div>
-      <h1>
-        Olá <span>Dev!</span>
-      </h1>
+      <h1>Posts</h1>
+      <ul>
+        {posts.map(post => (
+          <li key={post.id}>{post.title}</li>
+        ))}
+      </ul>
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<IHomeProps> = async () => {
+  const response = await fetch('http://localhost:3333/posts');
+  const posts = await response.json();
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};
